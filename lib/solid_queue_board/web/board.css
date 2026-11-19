@@ -128,6 +128,13 @@ tbody tr.clickable:hover td { background: var(--hover); }
 tbody tr.detail td { background: var(--detail-bg); padding: 12px 10px 14px; }
 tbody tr.changed td { animation: sqb-flash 1s ease-out; }
 @keyframes sqb-flash { from { background: var(--flash); } }
+/* new job: double pulse in green, longer than the "changed" flash */
+tbody tr.added td { animation: sqb-added 3s ease-out; }
+@keyframes sqb-added {
+  0% { background: color-mix(in srgb, var(--ok) 38%, transparent); }
+  22% { background: color-mix(in srgb, var(--ok) 6%, transparent); }
+  42% { background: color-mix(in srgb, var(--ok) 38%, transparent); }
+}
 th.num, td.num { text-align: right; }
 
 /* Content bits */
@@ -168,5 +175,5 @@ dl.kv dd { margin: 0; min-width: 0; word-break: break-all; }
   .input { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .live.busy i, tbody tr.changed td { animation: none; }
+  .live.busy i { animation: none; }
 }
