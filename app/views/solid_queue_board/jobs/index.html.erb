@@ -1,0 +1,99 @@
+<div class="toolbar">
+  <%= form_with url: jobs_path, method: :get, class: "search-form", local: true do |f| %>
+    <%= hidden_field_tag :status, @query.status unless @query.status == "all" %>
+    <%= hidden_field_tag :queue, @query.queue if @query.queue %>
+    <%= search_field_tag :q, @query.search, id: "sqb-search", class: "input", placeholder: sqb_t("jobs.search_placeholder"), "aria-label": sqb_t("jobs.search_placeholder") %>
+    <button type="submit" class="btn"><%= sqb_t("jobs.search") %></button>
+    <% if @query.search || @query.queue %>
+      <%= link_to sqb_t("jobs.clear_filters"), jobs_path(status: (@query.status == "all" ? nil : @query.status)), class: "btn btn-link" %>
+    <% end %>
+  <% end %>
+  <div class="toolbar-right">
+    <% if @query.queue %>
+      <span class="muted"><%= sqb_t("jobs.queue_filter") %></span> <code class="mono"><%= @query.queue %></code>
+    <% end %>
+    <% if @job_counts["failed"].positive? %>
+      <%= button_to sqb_t("jobs.retry_all", count: @job_counts["failed"]), retry_all_jobs_path,
+                    class: "btn", form: { data: { sqb_confirm: sqb_t("jobs.confirm_retry_all", count: @job_counts["failed"]) } } %>
+    <% end %>
+  </div>
+</div>
+
+<div class="tbl-wrap">
+  <table class="with-details">
+    <thead>
+      <tr>
+        <th><%= sqb_t("jobs.columns.id") %></th>
+        <th><%= sqb_t("jobs.columns.status") %></th>
+        <th><%= sqb_t("jobs.columns.job") %></th>
+        <th><%= sqb_t("jobs.columns.queue") %></th>
+        <th><%= sqb_t("jobs.columns.when") %></th>
+        <th><%= sqb_t("jobs.columns.detail") %></th>
+        <th class="num"><%= sqb_t("jobs.columns.executions") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @query.rows.each do |job| %>
+        <% status = sqb_job_status(job) %>
+        <tr class="clickable" data-sqb-toggle="<%= job.id %>" data-sqb-sig="<%= status %>" aria-expanded="false" tabindex="0">
+          <td class="mono"><span class="caret" aria-hidden="true">▸</span><%= job.id %></td>
+          <td><%= sqb_status_label(status) %></td>
+          <td><span class="cls"><%= job.class_name %></span><div class="args"><%= sqb_arguments(job) %></div></td>
+          <td class="mono"><%= link_to job.queue_name, jobs_path(queue: job.queue_name), class: "plain" %></td>
+          <td class="mono"><%= sqb_time(sqb_job_time(job, status)) %></td>
+          <td><%= sqb_job_detail(job, status) %></td>
+          <td class="num mono"><%= sqb_executions(job) %></td>
+        </tr>
+        <tr class="detail" id="sqb-detail-<%= job.id %>" hidden>
+          <td colspan="7">
+            <div class="detail-grid">
+              <% if status == "failed" %>
+                <div class="err-msg"><strong><%= job.failed_execution.exception_class %></strong>: <%= job.failed_execution.message %></div>
+                <pre class="code"><%= Array(job.failed_execution.backtrace).join("\n") %></pre>
+              <% end %>
+              <dl class="kv">
+                <dt><%= sqb_t("jobs.fields.active_job_id") %></dt><dd class="mono"><%= job.active_job_id %></dd>
+                <dt><%= sqb_t("jobs.fields.priority") %></dt><dd class="mono"><%= job.priority %></dd>
+                <dt><%= sqb_t("jobs.fields.created_at") %></dt><dd class="mono"><%= sqb_time(job.created_at) %></dd>
+                <dt><%= sqb_t("jobs.fields.scheduled_at") %></dt><dd class="mono"><%= sqb_time(job.scheduled_at) %></dd>
+                <dt><%= sqb_t("jobs.fields.finished_at") %></dt><dd class="mono"><%= sqb_time(job.finished_at) %></dd>
+                <% if job.concurrency_key.present? %>
+                  <dt><%= sqb_t("jobs.fields.concurrency_key") %></dt><dd class="mono"><%= job.concurrency_key %></dd>
+                <% end %>
+              </dl>
+              <div>
+                <div class="muted small"><%= sqb_t("jobs.fields.arguments") %></div>
+                <pre class="code"><%= sqb_arguments_pretty(job) %></pre>
+              </div>
+              <div class="row-actions">
+                <% if status == "failed" %>
+                  <%= button_to sqb_t("jobs.retry"), retry_job_path(job), class: "btn btn-primary btn-sm" %>
+                <% end %>
+                <% if sqb_discardable?(status) %>
+                  <%= button_to sqb_t("jobs.discard"), discard_job_path(job), class: "btn btn-danger btn-sm",
+                                form: { data: { sqb_confirm: sqb_t("jobs.confirm_discard", id: job.id) } } %>
+                <% end %>
+              </div>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <% if @query.rows.empty? %>
+        <tr><td colspan="7"><div class="empty"><strong><%= sqb_t("jobs.empty_title") %></strong><%= sqb_t("jobs.empty_text") %></div></td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if @query.prev_page? || @query.next_page? %>
+  <nav class="pager" aria-label="<%= sqb_t("jobs.pages") %>">
+    <% base = { status: (@query.status == "all" ? nil : @query.status), q: @query.search, queue: @query.queue } %>
+    <% if @query.prev_page? %>
+      <%= link_to sqb_t("jobs.prev"), jobs_path(base.merge(page: @query.page - 1)), class: "btn" %>
+    <% end %>
+    <span class="muted"><%= sqb_t("jobs.page", page: @query.page) %></span>
+    <% if @query.next_page? %>
+      <%= link_to sqb_t("jobs.next"), jobs_path(base.merge(page: @query.page + 1)), class: "btn" %>
+    <% end %>
+  </nav>
+<% end %>

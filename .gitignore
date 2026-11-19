@@ -1,0 +1,7 @@
+*.gem
+/.bundle/
+/pkg/
+/tmp/
+/log/
+# Gem: dependencies are resolved by the host app and by the CI matrix
+/Gemfile.lock

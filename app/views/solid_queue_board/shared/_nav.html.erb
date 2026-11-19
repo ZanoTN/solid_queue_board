@@ -1,0 +1,14 @@
+<nav class="tabs" aria-label="<%= sqb_t("nav.label") %>">
+  <% current_status = controller_name == "jobs" && @query && !@query.queue && !@query.search ? @query.status : nil %>
+  <% SolidQueueBoard::JobsQuery::STATUSES.each do |status| %>
+    <%= sqb_nav_tab sqb_t("nav.#{status}"),
+                    jobs_path(status: (status == "all" ? nil : status)),
+                    count: @job_counts[status],
+                    tone: SolidQueueBoard::ApplicationHelper::NAV_TONES[status],
+                    active: current_status == status %>
+  <% end %>
+  <span class="tab-sep" aria-hidden="true"></span>
+  <%= sqb_nav_tab sqb_t("nav.queues"), queues_path, count: @section_counts["queues"], active: controller_name == "queues" %>
+  <%= sqb_nav_tab sqb_t("nav.recurring_tasks"), recurring_tasks_path, count: @section_counts["recurring_tasks"], active: controller_name == "recurring_tasks" %>
+  <%= sqb_nav_tab sqb_t("nav.processes"), processes_path, count: @section_counts["processes"], active: controller_name == "processes" %>
+</nav>

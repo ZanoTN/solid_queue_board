@@ -1,0 +1,34 @@
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th><%= sqb_t("processes.columns.kind") %></th>
+        <th><%= sqb_t("processes.columns.name") %></th>
+        <th class="num"><%= sqb_t("processes.columns.pid") %></th>
+        <th><%= sqb_t("processes.columns.host") %></th>
+        <th><%= sqb_t("processes.columns.details") %></th>
+        <th class="num"><%= sqb_t("processes.columns.running") %></th>
+        <th><%= sqb_t("processes.columns.heartbeat") %></th>
+        <th><%= sqb_t("processes.columns.status") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @processes.each do |process| %>
+        <% alive = process.last_heartbeat_at && process.last_heartbeat_at > SolidQueue.process_alive_threshold.ago %>
+        <tr>
+          <td class="cls"><%= process.kind %></td>
+          <td class="mono"><%= process.name %></td>
+          <td class="num mono"><%= process.pid %></td>
+          <td class="mono"><%= process.hostname %></td>
+          <td class="small"><%= sqb_metadata(process.metadata) %></td>
+          <td class="num mono"><%= @claimed[process.id] || (process.kind == "Worker" ? 0 : "—") %></td>
+          <td class="mono"><%= sqb_time(process.last_heartbeat_at) %></td>
+          <td><%= alive ? sqb_status_label("finished", sqb_t("processes.alive")) : sqb_status_label("failed", sqb_t("processes.stale")) %></td>
+        </tr>
+      <% end %>
+      <% if @processes.empty? %>
+        <tr><td colspan="8"><div class="empty"><strong><%= sqb_t("processes.empty_title") %></strong><%= sqb_t("processes.empty_text") %></div></td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

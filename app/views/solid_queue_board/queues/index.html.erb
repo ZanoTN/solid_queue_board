@@ -1,0 +1,34 @@
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th><%= sqb_t("queues.columns.name") %></th>
+        <th><%= sqb_t("queues.columns.status") %></th>
+        <th class="num"><%= sqb_t("queues.columns.size") %></th>
+        <th class="num"><%= sqb_t("queues.columns.latency") %></th>
+        <th><%= sqb_t("queues.columns.action") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @queues.each do |queue| %>
+        <tr>
+          <td class="cls"><%= link_to queue.name, jobs_path(queue: queue.name), class: "plain" %></td>
+          <td><%= queue.paused? ? sqb_status_label("blocked", sqb_t("queues.paused")) : sqb_status_label("finished", sqb_t("queues.active")) %></td>
+          <td class="num mono"><%= queue.size %></td>
+          <td class="num mono"><%= queue.size.positive? ? sqb_duration(queue.latency) : "—" %></td>
+          <td>
+            <% if queue.paused? %>
+              <%= button_to sqb_t("queues.resume"), resume_queue_path(queue.name), class: "btn btn-sm" %>
+            <% else %>
+              <%= button_to sqb_t("queues.pause"), pause_queue_path(queue.name), class: "btn btn-sm",
+                            form: { data: { sqb_confirm: sqb_t("queues.confirm_pause", name: queue.name) } } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @queues.empty? %>
+        <tr><td colspan="5"><div class="empty"><strong><%= sqb_t("queues.empty_title") %></strong><%= sqb_t("queues.empty_text") %></div></td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

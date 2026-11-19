@@ -1,0 +1,50 @@
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th><%= sqb_t("recurring.columns.key") %></th>
+        <th><%= sqb_t("recurring.columns.job") %></th>
+        <th><%= sqb_t("recurring.columns.schedule") %></th>
+        <th><%= sqb_t("recurring.columns.next") %></th>
+        <th><%= sqb_t("recurring.columns.last") %></th>
+        <th><%= sqb_t("recurring.columns.result") %></th>
+        <th><%= sqb_t("recurring.columns.action") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tasks.each do |task| %>
+        <% last = @last_runs[task.key] %>
+        <tr>
+          <td class="cls"><%= task.key %></td>
+          <td>
+            <% if task.class_name.present? %>
+              <span class="cls"><%= task.class_name %></span>
+              <% if task.arguments.present? %><div class="args"><%= JSON.generate(task.arguments) rescue task.arguments.inspect %></div><% end %>
+            <% else %>
+              <span class="args"><%= task.command %></span>
+            <% end %>
+          </td>
+          <td class="mono"><%= task.schedule %></td>
+          <td class="mono"><%= sqb_time(begin; task.next_time; rescue StandardError; nil; end) %></td>
+          <td class="mono"><%= sqb_time(last[:at]) %></td>
+          <td>
+            <% if last[:job] %>
+              <%= link_to jobs_path(q: last[:job].id), class: "plain" do %><%= sqb_status_label(sqb_job_status(last[:job])) %><% end %>
+            <% elsif last[:at] %>
+              <span class="muted"><%= sqb_t("recurring.cleared") %></span>
+            <% else %>
+              <span class="muted"><%= sqb_t("recurring.never") %></span>
+            <% end %>
+          </td>
+          <td>
+            <%= button_to sqb_t("recurring.run"), run_recurring_task_path(task.key), class: "btn btn-sm",
+                          form: { data: { sqb_confirm: sqb_t("recurring.confirm_run", key: task.key) } } %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @tasks.empty? %>
+        <tr><td colspan="7"><div class="empty"><strong><%= sqb_t("recurring.empty_title") %></strong><%= sqb_t("recurring.empty_text") %></div></td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

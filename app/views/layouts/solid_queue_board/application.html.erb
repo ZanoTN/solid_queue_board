@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title><%= sqb_t("title") %> · <%= SolidQueueBoard.app_title %></title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= sqb_inline_css %>
+</head>
+<body>
+  <div class="sqb" id="sqb"
+       data-poll-default="<%= SolidQueueBoard.default_poll_interval %>"
+       data-partial-header="<%= SolidQueueBoard::ApplicationController::PARTIAL_HEADER %>"
+       data-t-updated="<%= sqb_t("poll.updated") %>"
+       data-t-next="<%= sqb_t("poll.next") %>"
+       data-t-off="<%= sqb_t("poll.off") %>"
+       data-t-loading="<%= sqb_t("poll.loading") %>"
+       data-t-error="<%= sqb_t("poll.error") %>">
+    <header class="bar">
+      <div class="brand">
+        <span class="logo"><%= sqb_t("title") %></span>
+        <span class="env"><%= SolidQueueBoard.app_title %> · <%= Rails.env %></span>
+      </div>
+      <div class="tools">
+        <span class="live" id="sqb-live-status"><i aria-hidden="true"></i><span></span></span>
+        <label for="sqb-poll"><%= sqb_t("poll.every") %></label>
+        <select id="sqb-poll">
+          <% SolidQueueBoard.poll_intervals.each do |seconds| %>
+            <option value="<%= seconds %>"><%= seconds.zero? ? sqb_t("poll.never") : "#{seconds} s" %></option>
+          <% end %>
+        </select>
+        <label for="sqb-theme" class="sr-only"><%= sqb_t("theme.label") %></label>
+        <select id="sqb-theme" aria-label="<%= sqb_t("theme.label") %>">
+          <option value="system"><%= sqb_t("theme.system") %></option>
+          <option value="light"><%= sqb_t("theme.light") %></option>
+          <option value="dark"><%= sqb_t("theme.dark") %></option>
+        </select>
+        <button type="button" class="bar-btn" id="sqb-refresh"><%= sqb_t("poll.refresh") %></button>
+        <% if SolidQueueBoard.back_url %>
+          <%= link_to sqb_t("back"), SolidQueueBoard.back_url, class: "bar-link" %>
+        <% end %>
+      </div>
+    </header>
+
+    <div id="sqb-region">
+      <%= render "solid_queue_board/shared/nav" %>
+      <%= render "solid_queue_board/shared/flash" %>
+      <main class="panel"><%= yield %></main>
+    </div>
+  </div>
+  <%= sqb_inline_js %>
+</body>
+</html>
