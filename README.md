@@ -7,7 +7,7 @@ A small, self-contained dashboard for [Solid Queue](https://github.com/rails/sol
 - Auto-refresh by polling: off, 2, 5, 10 or 30 seconds. It pauses while the tab is hidden, while you type in a field and while you select text.
 - Actions: retry or discard failed jobs, retry all failed jobs, discard ready, scheduled or blocked jobs, pause and resume queues, run a recurring task now.
 - No dependencies to install or import: CSS and JavaScript ship inside the gem and are inlined in the page. No asset pipeline, no CDN, no web fonts. Works with Sprockets, Propshaft or neither.
-- English and Italian translations.
+- English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean translations.
 
 ## Requirements
 
@@ -78,7 +78,7 @@ Inline `<style>` and `<script>` tags carry the request nonce when your app confi
 
 ## Translations
 
-English and Italian are included. The page follows `I18n.locale`. To add a language, copy `config/locales/en.yml` into your app as `config/locales/solid_queue_board.<locale>.yml` and translate the `solid_queue_board` keys.
+English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean are included (`en`, `it`, `de`, `es`, `fr`, `pt`, `zh-CN`, `ja`, `ko`). The page follows `I18n.locale`; if your app sets `config.i18n.available_locales`, add the ones you want there. To add a language, copy `config/locales/en.yml` into your app as `config/locales/solid_queue_board.<locale>.yml` and translate the `solid_queue_board` keys.
 
 ## Development
 

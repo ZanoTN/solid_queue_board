@@ -32,6 +32,7 @@ en:
       "off": "Paused"
       loading: "Refreshing…"
       error: "Refresh failed (%{status}). Reload the page."
+      change: "Click to change the interval"
     theme:
       label: "Theme"
       system: "System"
@@ -75,6 +76,7 @@ en:
         when: "When"
         detail: "Detail"
         executions: "Runs"
+        actions: "Actions"
       fields:
         active_job_id: "Active Job ID"
         priority: "Priority"

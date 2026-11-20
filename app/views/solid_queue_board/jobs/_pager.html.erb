@@ -1,0 +1,12 @@
+<% if @query.prev_page? || @query.next_page? %>
+  <nav class="pager" aria-label="<%= sqb_t("jobs.pages") %>">
+    <% base = { status: (@query.status == "all" ? nil : @query.status), q: @query.search, queue: @query.queue } %>
+    <% if @query.prev_page? %>
+      <%= link_to sqb_t("jobs.prev"), jobs_path(base.merge(page: @query.page - 1)), class: "btn" %>
+    <% end %>
+    <span class="muted"><%= sqb_t("jobs.page", page: @query.page) %></span>
+    <% if @query.next_page? %>
+      <%= link_to sqb_t("jobs.next"), jobs_path(base.merge(page: @query.page + 1)), class: "btn" %>
+    <% end %>
+  </nav>
+<% end %>

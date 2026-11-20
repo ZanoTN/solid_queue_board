@@ -1,0 +1,20 @@
+<div class="toolbar">
+  <%= form_with url: jobs_path, method: :get, class: "search-form", local: true do |f| %>
+    <%= hidden_field_tag :status, @query.status unless @query.status == "all" %>
+    <%= hidden_field_tag :queue, @query.queue if @query.queue %>
+    <%= search_field_tag :q, @query.search, id: "sqb-search", class: "input", placeholder: sqb_t("jobs.search_placeholder"), "aria-label": sqb_t("jobs.search_placeholder") %>
+    <button type="submit" class="btn"><%= sqb_t("jobs.search") %></button>
+    <% if @query.search || @query.queue %>
+      <%= link_to sqb_t("jobs.clear_filters"), jobs_path(status: (@query.status == "all" ? nil : @query.status)), class: "btn btn-link" %>
+    <% end %>
+  <% end %>
+  <div class="toolbar-right">
+    <% if @query.queue %>
+      <span class="muted"><%= sqb_t("jobs.queue_filter") %></span> <code class="mono"><%= @query.queue %></code>
+    <% end %>
+    <% if @query.status == "failed" && @job_counts["failed"].positive? %>
+      <%= button_to sqb_t("jobs.retry_all", count: @job_counts["failed"]), retry_all_jobs_path,
+                    class: "btn", form: { data: { sqb_confirm: sqb_t("jobs.confirm_retry_all", count: @job_counts["failed"]) } } %>
+    <% end %>
+  </div>
+</div>

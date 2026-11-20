@@ -43,6 +43,22 @@ class JobsPageTest < BoardTest
     assert_select "main.panel"
   end
 
+  test "auto-refresh of the jobs page returns JSON with one fragment per row" do
+    job = enqueue
+    fail!(enqueue)
+    get "/jobs", headers: { "X-SQB-Partial" => "1", "Accept" => "application/json" }
+    assert_response :success
+    data = JSON.parse(response.body)
+    assert_equal %w[nav pager rows toolbar empty].sort, data.keys.sort
+    assert_equal 2, data["rows"].size
+    row = data["rows"].find { |r| r["id"] == job.id.to_s }
+    assert_equal "ready", row["sig"]
+    assert_includes row["html"], %(data-sqb-toggle="#{job.id}")
+    assert_includes row["html"], %(id="sqb-detail-#{job.id}")
+    assert_includes data["nav"], "Failed"
+    assert_nil data["empty"]
+  end
+
   test "retries and discards failed jobs" do
     job = fail!(enqueue)
     post "/jobs/jobs/#{job.id}/retry"
@@ -60,6 +76,17 @@ class JobsPageTest < BoardTest
     post "/jobs/jobs/retry_all"
     assert_equal 0, SolidQueue::FailedExecution.count
     assert_equal 2, SolidQueue::ReadyExecution.count
+  end
+
+  test "shows retry all only on the failed tab, and row actions per status" do
+    fail!(enqueue)
+    enqueue
+    get "/jobs"
+    assert_select "form[action$='/retry_all']", 0
+    assert_select "tr[data-sqb-sig=failed] .row-actions form", 2
+    assert_select "tr[data-sqb-sig=ready] .row-actions form", 1
+    get "/jobs", params: { status: "failed" }
+    assert_select "form[action$='/retry_all']", 1
   end
 
   test "paginates" do
@@ -85,6 +112,24 @@ class JobsPageTest < BoardTest
       fail!(enqueue)
       get "/jobs"
       assert_select "a.tab", text: /Falliti\s*1/
+    end
+  end
+
+  test "every locale has the same keys and placeholders as English" do
+    flatten = lambda do |hash, prefix = nil|
+      hash.flat_map do |key, value|
+        path = [ prefix, key ].compact.join(".")
+        value.is_a?(Hash) ? flatten.call(value, path) : [ [ path, value.to_s.scan(/%\{\w+\}/).sort ] ]
+      end
+    end
+    dir = File.expand_path("../config/locales", __dir__)
+    english = flatten.call(YAML.load_file(File.join(dir, "en.yml"))["en"]).to_h
+
+    Dir[File.join(dir, "*.yml")].each do |file|
+      locale = File.basename(file, ".yml")
+      other = flatten.call(YAML.load_file(file).fetch(locale)).to_h
+      assert_equal english.keys.sort, other.keys.sort, "#{locale}.yml keys differ from en.yml"
+      english.each { |key, vars| assert_equal vars, other[key], "#{locale}.yml #{key} placeholders differ" }
     end
   end
 end

@@ -32,6 +32,7 @@ it:
       "off": "Fermo"
       loading: "Aggiornamento…"
       error: "Aggiornamento non riuscito (%{status}). Ricarica la pagina."
+      change: "Clicca per cambiare l'intervallo"
     theme:
       label: "Tema"
       system: "Sistema"
@@ -75,6 +76,7 @@ it:
         when: "Quando"
         detail: "Dettaglio"
         executions: "Esec."
+        actions: "Azioni"
       fields:
         active_job_id: "Active Job ID"
         priority: "Priorità"

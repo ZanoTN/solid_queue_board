@@ -6,6 +6,7 @@ module SolidQueueBoard
 
     def index
       @query = JobsQuery.new(status: params[:status], search: params[:q], queue: params[:queue], page: params[:page])
+      render json: live_payload if request.format.json?
     end
 
     def retry
@@ -35,6 +36,21 @@ module SolidQueueBoard
     end
 
     private
+      # Auto-refresh of the jobs page: one HTML fragment per job row, keyed by id, so the page
+      # can insert, update and remove rows one by one (and animate them). Markup stays in ERB.
+      def live_payload
+        fragment = ->(partial, **locals) { render_to_string(partial: partial, formats: [ :html ], locals: locals) }
+        {
+          nav: fragment.call("solid_queue_board/shared/nav"),
+          toolbar: fragment.call("solid_queue_board/jobs/toolbar"),
+          pager: fragment.call("solid_queue_board/jobs/pager"),
+          empty: (fragment.call("solid_queue_board/jobs/empty") if @query.rows.empty?),
+          rows: @query.rows.map do |job|
+            { id: job.id.to_s, sig: helpers.sqb_job_status(job), html: fragment.call("solid_queue_board/jobs/row", job: job) }
+          end
+        }
+      end
+
       def set_job
         @job = SolidQueue::Job.find_by(id: params[:id])
         back_to_board jobs_path, alert: t("solid_queue_board.flash.not_found", id: params[:id]) unless @job

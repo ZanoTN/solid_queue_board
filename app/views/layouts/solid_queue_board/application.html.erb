@@ -17,27 +17,25 @@
        data-t-next="<%= sqb_t("poll.next") %>"
        data-t-off="<%= sqb_t("poll.off") %>"
        data-t-loading="<%= sqb_t("poll.loading") %>"
-       data-t-error="<%= sqb_t("poll.error") %>">
+       data-t-error="<%= sqb_t("poll.error") %>"
+       data-t-every="<%= sqb_t("poll.every") %>"
+       data-t-change="<%= sqb_t("poll.change") %>"
+       data-t-theme="<%= sqb_t("theme.label") %>"
+       data-t-theme-system="<%= sqb_t("theme.system") %>"
+       data-t-theme-light="<%= sqb_t("theme.light") %>"
+       data-t-theme-dark="<%= sqb_t("theme.dark") %>"
+       data-poll-intervals="<%= SolidQueueBoard.poll_intervals.join(",") %>">
     <header class="bar">
       <div class="brand">
         <span class="logo"><%= sqb_t("title") %></span>
         <span class="env"><%= SolidQueueBoard.app_title %> · <%= Rails.env %></span>
       </div>
       <div class="tools">
-        <span class="live" id="sqb-live-status"><i aria-hidden="true"></i><span></span></span>
-        <label for="sqb-poll"><%= sqb_t("poll.every") %></label>
-        <select id="sqb-poll">
-          <% SolidQueueBoard.poll_intervals.each do |seconds| %>
-            <option value="<%= seconds %>"><%= seconds.zero? ? sqb_t("poll.never") : "#{seconds} s" %></option>
-          <% end %>
-        </select>
-        <label for="sqb-theme" class="sr-only"><%= sqb_t("theme.label") %></label>
-        <select id="sqb-theme" aria-label="<%= sqb_t("theme.label") %>">
-          <option value="system"><%= sqb_t("theme.system") %></option>
-          <option value="light"><%= sqb_t("theme.light") %></option>
-          <option value="dark"><%= sqb_t("theme.dark") %></option>
-        </select>
-        <button type="button" class="bar-btn" id="sqb-refresh"><%= sqb_t("poll.refresh") %></button>
+        <button type="button" class="live" id="sqb-live" aria-describedby="sqb-live-status">
+          <i aria-hidden="true"></i><span id="sqb-live-label"></span>
+        </button>
+        <span class="sr-only" id="sqb-live-status" aria-live="polite"></span>
+        <button type="button" class="bar-icon" id="sqb-theme"></button>
         <% if SolidQueueBoard.back_url %>
           <%= link_to sqb_t("back"), SolidQueueBoard.back_url, class: "bar-link" %>
         <% end %>

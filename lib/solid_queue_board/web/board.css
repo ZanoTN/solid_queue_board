@@ -57,17 +57,18 @@ a.plain { color: inherit; }
 .brand .logo { font-size: 18px; }
 .brand .env { font-family: var(--f-mono); font-size: 12px; color: var(--bar-muted); }
 .tools { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; font-size: 13px; color: var(--bar-muted); }
-.tools select {
-  font: inherit; color: var(--fg); background: var(--surface); border: 1px solid var(--input-line);
-  padding: 3px 6px; border-radius: 0;
+/* Live button: dot + interval; click cycles the interval. Theme: icon button. */
+.live, .bar-icon {
+  display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 12.5px; cursor: pointer; white-space: nowrap;
+  color: var(--bar-fg); background: transparent; border: 1px solid var(--bar-muted); padding: 3px 10px; border-radius: 0;
 }
-.live { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+.live:hover, .bar-icon:hover { border-color: var(--bar-fg); }
+.bar-icon { justify-content: center; width: 30px; padding: 3px 0; font-size: 14px; line-height: 1.2; }
 .live i { width: 8px; height: 8px; background: var(--ok); display: inline-block; }
 .live.off i { background: var(--idle); }
 .live.error i { background: var(--err); }
 .live.busy i { animation: sqb-blink .5s steps(2) infinite; }
 @keyframes sqb-blink { 50% { opacity: .2; } }
-.bar-btn { font: inherit; font-size: 12px; cursor: pointer; color: var(--bar-fg); background: transparent; border: 1px solid var(--bar-muted); padding: 3px 10px; border-radius: 0; }
 .bar-link { color: var(--bar-fg); font-size: 12.5px; }
 
 /* Single menu row: job states | sections */
@@ -118,7 +119,6 @@ a.plain { color: inherit; }
 table { border-collapse: collapse; width: 100%; min-width: 760px; font-variant-numeric: tabular-nums; }
 th, td { padding: 8px 10px; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
 thead th { border-top: 0; border-bottom: 2px solid var(--line); background: var(--head-bg); font-weight: 700; white-space: nowrap; }
-td + td, th + th { border-left: 1px solid var(--line); }
 tbody tr:nth-child(even) td { background: var(--row-alt); }
 /* jobs table: every job is a row pair (summary + hidden detail), so stripe by pairs */
 table.with-details tbody tr:nth-child(4n+1) td, table.with-details tbody tr:nth-child(4n+2) td { background: var(--surface); }
@@ -128,12 +128,12 @@ tbody tr.clickable:hover td { background: var(--hover); }
 tbody tr.detail td { background: var(--detail-bg); padding: 12px 10px 14px; }
 tbody tr.changed td { animation: sqb-flash 1s ease-out; }
 @keyframes sqb-flash { from { background: var(--flash); } }
-/* new job: double pulse in green, longer than the "changed" flash */
-tbody tr.added td { animation: sqb-added 3s ease-out; }
+/* new job: one long green pulse, longer than the "changed" flash */
+tbody tr.added td { animation: sqb-added 4s ease-in-out; }
+/* new row grows from zero height (JS wraps each cell's content while it animates) */
+.sqb-grow { overflow: hidden; }
 @keyframes sqb-added {
-  0% { background: color-mix(in srgb, var(--ok) 38%, transparent); }
-  22% { background: color-mix(in srgb, var(--ok) 6%, transparent); }
-  42% { background: color-mix(in srgb, var(--ok) 38%, transparent); }
+  0%, 35% { background: color-mix(in srgb, var(--ok) 38%, transparent); }
 }
 th.num, td.num { text-align: right; }
 
@@ -156,23 +156,60 @@ dl.kv dt { color: var(--muted); font-size: 12.5px; }
 dl.kv dd { margin: 0; min-width: 0; word-break: break-all; }
 .empty { padding: 28px 16px; text-align: center; color: var(--muted); }
 .empty strong { display: block; color: var(--fg); margin-bottom: 4px; }
+#sqb-toolbar, #sqb-pager { display: contents; }
 .pager { display: flex; gap: 10px; align-items: center; justify-content: center; }
 
-/* Status label (.label), squared */
-.label {
-  display: inline-block; padding: .2em .6em .3em; font-size: 75%; font-weight: 700; line-height: 1; color: var(--label-fg);
-  text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 0; background: var(--idle);
-}
-.label-primary { background: var(--primary); }
-.label-info { background: var(--info); }
-.label-warning { background: var(--warn); }
-.label-danger { background: var(--err); }
-.label-success { background: var(--ok); }
-.label-default { background: var(--idle); }
+/* Status: colored square + word. Each tone sets --tone, also used by the row stripe. */
+.tone-primary, .label-primary { --tone: var(--primary); }
+.tone-info, .label-info { --tone: var(--info); }
+.tone-warning, .label-warning { --tone: var(--warn); }
+.tone-danger, .label-danger { --tone: var(--err); }
+.tone-success, .label-success { --tone: var(--ok); }
+.tone-default, .label-default { --tone: var(--idle); }
+.label { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; white-space: nowrap; color: var(--fg); }
+.label::before { content: ""; flex: none; width: 9px; height: 9px; background: var(--tone, var(--idle)); }
+
+/* Jobs table: stripe on the left, actions on hover */
+table.jobs > tbody > tr[class*="tone-"] > td:first-child { box-shadow: inset 3px 0 0 var(--tone); }
+table.jobs .c-status { width: 1%; white-space: nowrap; }
+table.jobs .c-queue { width: 1%; white-space: nowrap; }
+table.jobs .c-when { width: 1%; white-space: nowrap; }
+table.jobs .c-actions { width: 1%; white-space: nowrap; text-align: right; }
+table.jobs .row-actions { justify-content: flex-end; flex-wrap: nowrap; visibility: hidden; }
+table.jobs tr:hover .row-actions, table.jobs tr:focus-within .row-actions, table.jobs tr[aria-expanded="true"] .row-actions { visibility: visible; }
+@media (hover: none) { table.jobs .row-actions { visibility: visible; } }
+.runs { margin-left: 6px; font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); }
+.sub { font-size: 11.5px; color: var(--muted); white-space: normal; }
+.sub .err-msg { font-size: 11.5px; }
+.btn-discard { color: var(--err-ink); }
+.btn-discard:hover { background: var(--err-bg); }
 
 @media (max-width: 600px) {
-  .bar { align-items: flex-start; }
+  .bar { align-items: center; }
+  .brand .env { display: none; }
   .input { width: 100%; }
+  .search-form { flex: 1 1 100%; }
+  .search-form .input { flex: 1; width: auto; }
+
+  /* jobs become cards: job + status, then time + actions */
+  table.jobs { min-width: 0; }
+  table.jobs thead { display: none; }
+  table.jobs, table.jobs tbody, table.jobs td { display: block; }
+  table.jobs td { border-top: 0; }
+  table.jobs > tbody > tr { display: block; border-top: 1px solid var(--line); }
+  table.jobs > tbody > tr:first-child { border-top: 0; }
+  table.jobs > tbody > tr.clickable {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "job status" "when actions";
+    padding: 6px 0; box-shadow: inset 3px 0 0 var(--tone);
+  }
+  table.jobs > tbody > tr.detail { box-shadow: inset 3px 0 0 var(--tone); border-top: 0; }
+  table.jobs > tbody > tr[class*="tone-"] > td:first-child { box-shadow: none; }
+  table.jobs .c-job { grid-area: job; } table.jobs .c-status { grid-area: status; width: auto; }
+  table.jobs .c-when { grid-area: when; width: auto; white-space: normal; }
+  table.jobs .c-actions { grid-area: actions; width: auto; align-self: end; }
+  table.jobs .c-queue { display: none; }
+  table.jobs > tbody > tr.clickable > td { padding: 3px 10px; }
+  table.jobs .row-actions { visibility: visible; }
 }
 @media (prefers-reduced-motion: reduce) {
   .live.busy i { animation: none; }

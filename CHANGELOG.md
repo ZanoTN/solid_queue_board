@@ -6,6 +6,10 @@
   failed job retry/discard and "retry all", queues pause/resume, recurring tasks with "run now", processes and heartbeats.
 - Auto-refresh by polling (off, 2, 5, 10, 30 s), paused while the tab is hidden or the user is typing.
   Rows are updated in place (new, changed and removed rows only), so open rows, hover and animations survive a refresh.
-- New jobs that appear on a refresh pulse green twice for about 3 seconds; jobs that change state keep a short flash.
+  The jobs page refreshes through JSON with one HTML fragment per row; new rows slide in and the rows below move down.
+- New jobs that appear on a refresh get one long green pulse (about 4 seconds); jobs that change state keep a short flash.
+- Compact top bar: one live button (click cycles the refresh interval and refreshes) and one theme button.
+- Jobs table in five columns with a status stripe; retry and discard sit on the row, "retry all" only on the Failed tab.
+  Below 600px each job becomes a card, without horizontal scrolling.
 - Light and dark theme (system, light, dark), Bootstrap 3 look with square corners.
-- English and Italian translations.
+- English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean translations.

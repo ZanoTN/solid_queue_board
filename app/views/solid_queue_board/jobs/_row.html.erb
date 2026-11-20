@@ -1,0 +1,53 @@
+<% status = sqb_job_status(job) %>
+<% executions = sqb_executions(job).to_i %>
+<% tone = "tone-#{SolidQueueBoard::ApplicationHelper::STATUS_TONES.fetch(status, 'default')}" %>
+<tr class="clickable <%= tone %>" data-sqb-toggle="<%= job.id %>" data-sqb-sig="<%= status %>" aria-expanded="false" tabindex="0">
+  <td class="c-status"><%= sqb_status_label(status) %></td>
+  <td class="c-job">
+    <span class="cls"><%= job.class_name %></span>
+    <% if executions > 1 %><span class="runs" title="<%= sqb_t("jobs.columns.executions") %>">×<%= executions %></span><% end %>
+    <div class="args">#<%= job.id %> · <%= sqb_arguments(job) %></div>
+  </td>
+  <td class="c-queue mono"><%= link_to job.queue_name, jobs_path(queue: job.queue_name), class: "plain" %></td>
+  <td class="c-when mono">
+    <%= sqb_time(sqb_job_time(job, status)) %>
+    <% if (detail = sqb_job_detail(job, status)).present? %><div class="sub"><%= detail %></div><% end %>
+  </td>
+  <td class="c-actions">
+    <div class="row-actions">
+      <% if status == "failed" %>
+        <%= button_to sqb_t("jobs.retry"), retry_job_path(job), class: "btn btn-primary btn-sm" %>
+      <% end %>
+      <% if sqb_discardable?(status) %>
+        <%= button_to sqb_t("jobs.discard"), discard_job_path(job), class: "btn btn-sm btn-discard",
+                      form: { data: { sqb_confirm: sqb_t("jobs.confirm_discard", id: job.id) } } %>
+      <% end %>
+    </div>
+  </td>
+</tr>
+<tr class="detail <%= tone %>" id="sqb-detail-<%= job.id %>" hidden>
+  <td colspan="5">
+    <div class="detail-grid">
+      <% if status == "failed" %>
+        <div class="err-msg"><strong><%= job.failed_execution.exception_class %></strong>: <%= job.failed_execution.message %></div>
+        <pre class="code"><%= Array(job.failed_execution.backtrace).join("\n") %></pre>
+      <% end %>
+      <dl class="kv">
+        <dt><%= sqb_t("jobs.columns.queue") %></dt><dd class="mono"><%= job.queue_name %></dd>
+        <dt><%= sqb_t("jobs.columns.executions") %></dt><dd class="mono"><%= executions %></dd>
+        <dt><%= sqb_t("jobs.fields.active_job_id") %></dt><dd class="mono"><%= job.active_job_id %></dd>
+        <dt><%= sqb_t("jobs.fields.priority") %></dt><dd class="mono"><%= job.priority %></dd>
+        <dt><%= sqb_t("jobs.fields.created_at") %></dt><dd class="mono"><%= sqb_time(job.created_at) %></dd>
+        <dt><%= sqb_t("jobs.fields.scheduled_at") %></dt><dd class="mono"><%= sqb_time(job.scheduled_at) %></dd>
+        <dt><%= sqb_t("jobs.fields.finished_at") %></dt><dd class="mono"><%= sqb_time(job.finished_at) %></dd>
+        <% if job.concurrency_key.present? %>
+          <dt><%= sqb_t("jobs.fields.concurrency_key") %></dt><dd class="mono"><%= job.concurrency_key %></dd>
+        <% end %>
+      </dl>
+      <div>
+        <div class="muted small"><%= sqb_t("jobs.fields.arguments") %></div>
+        <pre class="code"><%= sqb_arguments_pretty(job) %></pre>
+      </div>
+    </div>
+  </td>
+</tr>
