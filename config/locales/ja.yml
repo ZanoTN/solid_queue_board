@@ -69,12 +69,10 @@ ja:
       prev: "← 新しい順"
       next: "古い順 →"
       columns:
-        id: "ID"
         status: "状態"
         job: "ジョブ"
         queue: "キュー"
         when: "日時"
-        detail: "詳細"
         executions: "実行回数"
         actions: "操作"
       fields:

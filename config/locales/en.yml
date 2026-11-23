@@ -69,12 +69,10 @@ en:
       prev: "← Newer"
       next: "Older →"
       columns:
-        id: "ID"
         status: "Status"
         job: "Job"
         queue: "Queue"
         when: "When"
-        detail: "Detail"
         executions: "Runs"
         actions: "Actions"
       fields:

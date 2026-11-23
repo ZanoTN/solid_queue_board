@@ -69,12 +69,10 @@ zh-CN:
       prev: "← 较新"
       next: "较旧 →"
       columns:
-        id: "ID"
         status: "状态"
         job: "作业"
         queue: "队列"
         when: "时间"
-        detail: "详情"
         executions: "执行次数"
         actions: "操作"
       fields:

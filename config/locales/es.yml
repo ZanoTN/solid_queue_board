@@ -69,12 +69,10 @@ es:
       prev: "← Más recientes"
       next: "Más antiguos →"
       columns:
-        id: "ID"
         status: "Estado"
         job: "Job"
         queue: "Cola"
         when: "Cuándo"
-        detail: "Detalle"
         executions: "Ejecuciones"
         actions: "Acciones"
       fields:

@@ -69,12 +69,10 @@ it:
       prev: "← Più recenti"
       next: "Meno recenti →"
       columns:
-        id: "ID"
         status: "Stato"
         job: "Job"
         queue: "Coda"
         when: "Quando"
-        detail: "Dettaglio"
         executions: "Esec."
         actions: "Azioni"
       fields:

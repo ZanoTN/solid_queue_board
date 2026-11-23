@@ -69,12 +69,10 @@ ko:
       prev: "← 최신"
       next: "이전 →"
       columns:
-        id: "ID"
         status: "상태"
         job: "잡"
         queue: "큐"
         when: "시각"
-        detail: "상세"
         executions: "실행 횟수"
         actions: "작업"
       fields:
