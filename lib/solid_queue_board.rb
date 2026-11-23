@@ -33,8 +33,8 @@ module SolidQueueBoard
   mattr_accessor :per_page, default: 50
 
   # Auto-refresh choices, in seconds (0 = off), and the default one.
-  mattr_accessor :poll_intervals, default: [ 0, 2, 5, 10, 30 ]
-  mattr_accessor :default_poll_interval, default: 5
+  mattr_accessor :poll_intervals, default: [ 3, 6, 12, 24, 0 ]
+  mattr_accessor :default_poll_interval, default: 6
 
   def self.configure
     yield self
