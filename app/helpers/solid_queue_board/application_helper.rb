@@ -90,6 +90,18 @@ module SolidQueueBoard
       sqb_payload(job)["executions"]
     end
 
+    # Column header that sorts the jobs by attribute: first click descending (newest, Z-A), then toggles.
+    def sqb_sort_header(label, attribute)
+      current = @query.sort_attribute == attribute ? @query.sort_direction : nil
+      next_direction = current == "desc" ? "asc" : "desc"
+      arrow = { "asc" => "\u25B2", "desc" => "\u25BC" }[current]
+      link = link_to(jobs_path(@query.url_params(sort: "#{attribute} #{next_direction}")), class: "sort",
+                     title: sqb_t("jobs.sort_by", column: label)) do
+        safe_join([ label, (tag.span(arrow, class: "sort-dir", "aria-hidden": true) if arrow) ].compact, " ")
+      end
+      tag.th(link, "aria-sort": { "asc" => "ascending", "desc" => "descending" }.fetch(current, "none"))
+    end
+
     def sqb_discardable?(status)
       %w[failed ready scheduled blocked].include?(status)
     end

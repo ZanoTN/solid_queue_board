@@ -1,5 +1,5 @@
 <nav class="tabs" aria-label="<%= sqb_t("nav.label") %>">
-  <% current_status = controller_name == "jobs" && @query && !@query.queue && !@query.search ? @query.status : nil %>
+  <% current_status = controller_name == "jobs" && @query && !@query.filtered? ? @query.status : nil %>
   <% SolidQueueBoard::JobsQuery::STATUSES.each do |status| %>
     <%= sqb_nav_tab sqb_t("nav.#{status}"),
                     jobs_path(status: (status == "all" ? nil : status)),

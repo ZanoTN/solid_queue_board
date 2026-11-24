@@ -5,9 +5,9 @@
     <thead>
       <tr>
         <th><%= sqb_t("jobs.columns.status") %></th>
-        <th><%= sqb_t("jobs.columns.job") %></th>
-        <th><%= sqb_t("jobs.columns.queue") %></th>
-        <th><%= sqb_t("jobs.columns.when") %></th>
+        <%= sqb_sort_header sqb_t("jobs.columns.job"), "class_name" %>
+        <%= sqb_sort_header sqb_t("jobs.columns.queue"), "queue_name" %>
+        <%= sqb_sort_header sqb_t("jobs.columns.when"), @query.time_attribute %>
         <th><span class="sr-only"><%= sqb_t("jobs.columns.actions") %></span></th>
       </tr>
     </thead>

@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   # Uses Solid Queue's models directly (executions, Queue, RecurringTask, Process):
   # stay on 1.x until a new major version has been checked.
   spec.add_dependency "solid_queue", "~> 1.0"
+  # Job filters and column sorting.
+  spec.add_dependency "ransack", ">= 4.0"
 end

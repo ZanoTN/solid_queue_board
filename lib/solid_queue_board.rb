@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "solid_queue"
+require "ransack"
 require "solid_queue_board/version"
 require "solid_queue_board/engine"
 

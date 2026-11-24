@@ -5,8 +5,9 @@ A small, self-contained dashboard for [Solid Queue](https://github.com/rails/sol
 - One menu row: job states (all, ready, running, scheduled, blocked, failed, finished) with live counts, then queues, recurring tasks and processes.
 - Plain tables in a Bootstrap 3 look with square corners, light and dark theme (follows the system, or pick one).
 - Auto-refresh by polling: off, 2, 5, 10 or 30 seconds. It pauses while the tab is hidden, while you type in a field and while you select text.
+- Jobs: filter by job class, search by class or ID, sort by job, queue or time (click a column header). Filters and sorting use [Ransack](https://github.com/activerecord-hackery/ransack).
 - Actions: retry or discard failed jobs, retry all failed jobs, discard ready, scheduled or blocked jobs, pause and resume queues, run a recurring task now.
-- No dependencies to install or import: CSS and JavaScript ship inside the gem and are inlined in the page. No asset pipeline, no CDN, no web fonts. Works with Sprockets, Propshaft or neither.
+- No front-end dependencies to install or import: CSS and JavaScript ship inside the gem and are inlined in the page. No asset pipeline, no CDN, no web fonts. Works with Sprockets, Propshaft or neither.
 - English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean translations.
 
 ## Requirements
@@ -14,6 +15,7 @@ A small, self-contained dashboard for [Solid Queue](https://github.com/rails/sol
 - Ruby 3.1+
 - Rails 7.1+
 - Solid Queue 1.0+
+- Ransack 4.0+ (installed with the gem)
 
 ## Installation
 

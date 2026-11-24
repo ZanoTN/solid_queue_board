@@ -34,6 +34,38 @@ class JobsPageTest < BoardTest
     assert_select "tr[data-sqb-sig]", 1
   end
 
+  test "filters by job class through Ransack and keeps the filter in links" do
+    enqueue(SampleJob)
+    enqueue(OtherJob)
+
+    get "/jobs", params: { f: { class_name_eq: "OtherJob" } }
+    assert_response :success
+    assert_select "tr[data-sqb-sig]", 1
+    assert_select "span.cls", text: "OtherJob"
+    assert_select "select[name='f[class_name_eq]'] option[selected]", text: "OtherJob"
+    assert_select "select[name='f[class_name_eq]'] option", 3 # blank + 2 classes
+    assert_select "th a.sort[href*='class_name_eq%5D=OtherJob']", 3
+  end
+
+  test "sorts columns through Ransack" do
+    enqueue(SampleJob, queue: "zeta")
+    enqueue(OtherJob, queue: "alpha")
+
+    get "/jobs", params: { f: { s: "class_name asc" } }
+    assert_equal %w[OtherJob SampleJob], css_select("span.cls").map(&:text)
+    assert_select "th[aria-sort=ascending] a.sort[href*='class_name+desc']"
+
+    get "/jobs", params: { f: { s: "queue_name desc" } }
+    assert_equal %w[SampleJob OtherJob], css_select("span.cls").map(&:text)
+
+    get "/jobs", params: { f: { s: "arguments desc" } } # not sortable: default order
+    assert_response :success
+    assert_select "th[aria-sort=descending]", 0
+
+    get "/jobs", params: { f: "junk" }
+    assert_response :success
+  end
+
   test "partial requests return only the live region" do
     enqueue
     get "/jobs", headers: { "X-SQB-Partial" => "1" }

@@ -102,6 +102,7 @@ a.plain { color: inherit; }
   font: inherit; font-size: 13px; color: var(--fg); background: var(--surface); border: 1px solid var(--input-line);
   padding: 5px 10px; width: 240px; max-width: 100%; min-width: 0; border-radius: 0; box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
 }
+select.input { width: auto; max-width: 220px; height: calc(1.42857em + 12px); padding: 0 6px; }
 .btn {
   display: inline-block; font: inherit; font-size: 13px; line-height: 1.42857; cursor: pointer; color: var(--fg);
   background: var(--btn-bg); border: 1px solid var(--input-line); padding: 5px 10px; border-radius: 0; white-space: nowrap; text-decoration: none;
@@ -136,6 +137,9 @@ tbody tr.added td { animation: sqb-added 4s ease-in-out; }
   0%, 35% { background: color-mix(in srgb, var(--ok) 38%, transparent); }
 }
 th.num, td.num { text-align: right; }
+th a.sort { color: inherit; text-decoration: none; white-space: nowrap; }
+th a.sort:hover { color: var(--link); }
+th .sort-dir { font-size: 10px; color: var(--muted); }
 
 /* Content bits */
 .mono { font-family: var(--f-mono); font-size: 12px; }
@@ -192,6 +196,7 @@ table.jobs tr:hover .row-actions, table.jobs tr:focus-within .row-actions, table
   .input { width: 100%; }
   .search-form { flex: 1 1 100%; }
   .search-form .input { flex: 1; width: auto; }
+  .search-form select.input { flex: 1 1 100%; max-width: none; }
 
   /* cards: the background and the status stripe go on the row, so the row padding does not leave gaps */
   .tbl-wrap table.with-details > tbody > tr > td { background: transparent; }

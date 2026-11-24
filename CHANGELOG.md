@@ -14,6 +14,9 @@
 - Processes expand on click like jobs: ID, start time and uptime, supervisor, supervised processes,
   full metadata and the jobs the process is running (each linked to the jobs list). Below 600px each process
   becomes a card, like the jobs.
+- Jobs: filter by job class (menu in the toolbar) and sort by job, queue or time by clicking the column header.
+  Built on Ransack, now a dependency; a read-only `SolidQueueBoard::JobRecord` model holds the Ransack allowlist,
+  so the app's `SolidQueue::Job` is not changed.
 - Fix: below 600px the job details were always open, and the card background and status stripe had gaps.
 - Light and dark theme (system, light, dark), Bootstrap 3 look with square corners.
 - English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean translations.

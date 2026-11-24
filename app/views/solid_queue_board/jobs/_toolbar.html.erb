@@ -2,10 +2,15 @@
   <%= form_with url: jobs_path, method: :get, class: "search-form", local: true do |f| %>
     <%= hidden_field_tag :status, @query.status unless @query.status == "all" %>
     <%= hidden_field_tag :queue, @query.queue if @query.queue %>
+    <%= hidden_field_tag "f[s]", @query.sort, id: nil if @query.sort %>
+    <%= select_tag "f[class_name_eq]",
+                   options_for_select(@query.job_classes, @query.job_class),
+                   include_blank: sqb_t("jobs.all_classes"), id: "sqb-class", class: "input select",
+                   "aria-label": sqb_t("jobs.class_filter"), data: { sqb_autosubmit: "" } %>
     <%= search_field_tag :q, @query.search, id: "sqb-search", class: "input", placeholder: sqb_t("jobs.search_placeholder"), "aria-label": sqb_t("jobs.search_placeholder") %>
     <button type="submit" class="btn"><%= sqb_t("jobs.search") %></button>
-    <% if @query.search || @query.queue %>
-      <%= link_to sqb_t("jobs.clear_filters"), jobs_path(status: (@query.status == "all" ? nil : @query.status)), class: "btn btn-link" %>
+    <% if @query.filtered? %>
+      <%= link_to sqb_t("jobs.clear_filters"), jobs_path(@query.url_params(q: nil, queue: nil, class_name: nil)), class: "btn btn-link" %>
     <% end %>
   <% end %>
   <div class="toolbar-right">

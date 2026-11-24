@@ -5,7 +5,8 @@ module SolidQueueBoard
     before_action :set_job, only: %i[retry discard]
 
     def index
-      @query = JobsQuery.new(status: params[:status], search: params[:q], queue: params[:queue], page: params[:page])
+      @query = JobsQuery.new(status: params[:status], search: params[:q], queue: params[:queue], filters: params[:f],
+                             page: params[:page])
       render json: live_payload if request.format.json?
     end
 
