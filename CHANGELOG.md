@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.1 (2026-11-25)
+
+- Security: the dashboard now checks the CSRF token itself (`protect_from_forgery with: :exception`).
+  Before, retry, discard, pause and "run now" were protected only if the host app turned forgery
+  protection on by default, so a host app without it was open to cross-site requests.
+- Gem metadata: links to the issue tracker and the documentation on rubygems.org.
+
+## 0.1.0 (2026-11-24)
 
 - First version: jobs by state (ready, running, scheduled, blocked, failed, finished), search and queue filter,
   failed job retry/discard and "retry all", queues pause/resume, recurring tasks with "run now", processes and heartbeats.
