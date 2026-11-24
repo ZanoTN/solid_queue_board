@@ -4,11 +4,20 @@ A small, self-contained dashboard for [Solid Queue](https://github.com/rails/sol
 
 - One menu row: job states (all, ready, running, scheduled, blocked, failed, finished) with live counts, then queues, recurring tasks and processes.
 - Plain tables in a Bootstrap 3 look with square corners, light and dark theme (follows the system, or pick one).
-- Auto-refresh by polling: off, 2, 5, 10 or 30 seconds. It pauses while the tab is hidden, while you type in a field and while you select text.
+- Auto-refresh by polling: 3, 6, 12 or 24 seconds, or paused (6 by default). It pauses while the tab is hidden, while you type in a field and while you select text.
 - Jobs: filter by job class, search by class or ID, sort by job, queue or time (click a column header). Filters and sorting use [Ransack](https://github.com/activerecord-hackery/ransack).
+- Click a job or a process to expand it: arguments, error and backtrace for jobs; supervisor, metadata and running jobs for processes.
 - Actions: retry or discard failed jobs, retry all failed jobs, discard ready, scheduled or blocked jobs, pause and resume queues, run a recurring task now.
 - No front-end dependencies to install or import: CSS and JavaScript ship inside the gem and are inlined in the page. No asset pipeline, no CDN, no web fonts. Works with Sprockets, Propshaft or neither.
 - English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean translations.
+
+## Screenshots
+
+![Jobs list with a failed job expanded](docs/screenshots/jobs.png)
+
+| Dark theme | Processes | Mobile |
+|---|---|---|
+| ![Jobs list, dark theme](docs/screenshots/jobs-dark.png) | ![Processes with details expanded](docs/screenshots/processes.png) | ![Jobs as cards on a phone](docs/screenshots/mobile.png) |
 
 ## Requirements
 
@@ -70,9 +79,9 @@ The chosen theme and refresh interval are stored per browser in `localStorage`.
 
 ## How auto-refresh works
 
-The page polls its own URL with the `X-SQB-Partial` header. The server then renders only the menu and the content, without the layout, and the script swaps them in. Open job rows stay open across refreshes. Rows whose state changed are briefly highlighted. If the session expires, the refresh stops with an error message instead of loading the login page inside the dashboard.
+The page polls its own URL with the `X-SQB-Partial` header. The server then renders only the menu and the content, without the layout, and the script swaps them in. Expanded job and process rows stay open across refreshes. Rows whose state changed are briefly highlighted. If the session expires, the refresh stops with an error message instead of loading the login page inside the dashboard.
 
-Each refresh runs a handful of `COUNT` queries (one per job state plus queues, recurring tasks and processes) and one page of jobs.
+Each refresh runs a handful of `COUNT` queries (one per job state plus queues, recurring tasks and processes) and one page of jobs. The jobs page also loads the list of job classes for the filter menu (`SELECT DISTINCT class_name`, served by Solid Queue's index on that column).
 
 ## Content Security Policy
 
@@ -90,6 +99,12 @@ bundle exec rake test
 ```
 
 Tests run against an in-memory SQLite database with the Solid Queue schema loaded.
+
+To try the dashboard on a demo app (SQLite, an in-process worker and a recurring job every 15 seconds):
+
+```bash
+bundle exec rake demo   # http://localhost:3000/jobs, PORT=4000 to change
+```
 
 ## License
 

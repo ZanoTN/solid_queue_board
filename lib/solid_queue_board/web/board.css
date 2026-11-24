@@ -177,6 +177,7 @@ dl.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 /* Jobs table: stripe on the left, actions on hover */
 table.jobs > tbody > tr[class*="tone-"] > td:first-child,
 table.procs > tbody > tr[class*="tone-"] > td:first-child { box-shadow: inset 3px 0 0 var(--tone); }
+table.procs .c-beat, table.procs .c-status { white-space: nowrap; }
 table.jobs .c-status { width: 1%; white-space: nowrap; }
 table.jobs .c-queue { width: 1%; white-space: nowrap; }
 table.jobs .c-when { width: 1%; white-space: nowrap; }
