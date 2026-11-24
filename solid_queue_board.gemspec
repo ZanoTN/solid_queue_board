@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.version = SolidQueueBoard::VERSION
   spec.authors = [ "Riccardo Zanotelli" ]
   spec.summary = "A self-contained, auto-refreshing dashboard for Solid Queue."
-  spec.description = "Mountable Rails engine to inspect and operate Solid Queue: jobs by state, failed job retry/discard, " \
-                     "queues pause/resume, recurring tasks and processes. Plain HTML tables, light and dark theme, " \
-                     "polling refresh, no JavaScript or CSS dependencies."
+  spec.description = "Mountable Rails engine to inspect and operate Solid Queue: jobs by state, filtered by job class " \
+                     "and sortable by column (Ransack), failed job retry/discard, queues pause/resume, recurring tasks " \
+                     "and processes. Plain HTML tables, light and dark theme, polling refresh, no front-end dependencies."
   spec.license = "MIT"
   spec.homepage = "https://github.com/ZanoTN/solid_queue_board"
   spec.required_ruby_version = ">= 3.1"
