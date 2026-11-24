@@ -1,23 +1,43 @@
 # Solid Queue Board
 
-A small, self-contained dashboard for [Solid Queue](https://github.com/rails/solid_queue).
+A small, self-contained dashboard for [Solid Queue](https://github.com/rails/solid_queue): see what your jobs are doing, retry or discard them, pause queues and check that workers are alive. Mount it in your Rails app; nothing to build or import.
 
-- One menu row: job states (all, ready, running, scheduled, blocked, failed, finished) with live counts, then queues, recurring tasks and processes.
-- Plain tables in a Bootstrap 3 look with square corners, light and dark theme (follows the system, or pick one).
-- Auto-refresh by polling: 3, 6, 12 or 24 seconds, or paused (6 by default). It pauses while the tab is hidden, while you type in a field and while you select text.
-- Jobs: filter by job class, search by class or ID, sort by job, queue or time (click a column header). Filters and sorting use [Ransack](https://github.com/activerecord-hackery/ransack).
-- Click a job or a process to expand it: arguments, error and backtrace for jobs; supervisor, metadata and running jobs for processes.
-- Actions: retry or discard failed jobs, retry all failed jobs, discard ready, scheduled or blocked jobs, pause and resume queues, run a recurring task now.
+![Expanding a failed job, sorting by time, filtering by job class and switching to the dark theme](docs/gifs/tour.gif)
+
+## Features
+
+### Jobs
+
+- One menu row with every job state (all, ready, running, scheduled, blocked, failed, finished) and its live count, then queues, recurring tasks and processes.
+- Click a job to expand it: error and backtrace, arguments, Active Job ID, priority, enqueue, schedule and finish times.
+- Filter by job class, search by class or ID, sort by job, queue or time by clicking a column header. Filters and sorting use [Ransack](https://github.com/activerecord-hackery/ransack).
+- Retry or discard a failed job, retry all failed jobs at once, discard ready, scheduled or blocked jobs.
+
+### Live updates
+
+![A new job appears on refresh: it slides in, turns from ready to finished and pulses green](docs/gifs/live-refresh.gif)
+
+- The page refreshes itself every 3, 6, 12 or 24 seconds, or stays paused (6 by default). One button in the top bar cycles the interval.
+- Only new, changed and removed rows are touched: new jobs slide in with a green pulse, jobs that change state flash, expanded rows stay open.
+- Refreshing pauses while the tab is hidden, while you type in a field and while you select text.
+
+### Queues, recurring tasks and processes
+
+- Queues with size and latency; pause and resume a queue.
+- Recurring tasks with schedule, next and last run; run one now.
+- Processes with heartbeat status. Click one to see its supervisor, the processes it supervises, its full metadata and the jobs it is running.
+
+### Mobile and dark theme
+
+![On a phone jobs and processes become cards; tapping one expands it](docs/gifs/mobile.gif)
+
+- Below 600px jobs and processes become cards, without horizontal scrolling.
+- Light and dark theme: follows the system, or pick one with the button in the top bar. Bootstrap 3 look with square corners.
+
+### Small footprint
+
 - No front-end dependencies to install or import: CSS and JavaScript ship inside the gem and are inlined in the page. No asset pipeline, no CDN, no web fonts. Works with Sprockets, Propshaft or neither.
 - English, Italian, German, Spanish, French, Portuguese, Simplified Chinese, Japanese and Korean translations.
-
-## Screenshots
-
-![Jobs list with a failed job expanded](docs/screenshots/jobs.png)
-
-| Dark theme | Processes | Mobile |
-|---|---|---|
-| ![Jobs list, dark theme](docs/screenshots/jobs-dark.png) | ![Processes with details expanded](docs/screenshots/processes.png) | ![Jobs as cards on a phone](docs/screenshots/mobile.png) |
 
 ## Requirements
 
