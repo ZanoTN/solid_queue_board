@@ -7,6 +7,10 @@ module SolidQueueBoard
     layout :board_layout
     helper SolidQueueBoard::ApplicationHelper
 
+    # Retry, discard, pause and run change data: check the CSRF token even when the host app
+    # (or the base controller class) does not turn forgery protection on by default.
+    protect_from_forgery with: :exception
+
     before_action :authorize_board!
     before_action :load_navigation
 

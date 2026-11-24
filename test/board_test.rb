@@ -139,6 +139,23 @@ class JobsPageTest < BoardTest
     assert_response :forbidden
   end
 
+  test "rejects actions without a valid CSRF token" do
+    ActionController::Base.allow_forgery_protection = true
+    job = fail!(enqueue(SampleJob))
+
+    post "/jobs/jobs/#{job.id}/retry"
+    assert_response :unprocessable_entity
+    assert job.reload.failed_execution, "job retried without a CSRF token"
+
+    get "/jobs"
+    token = css_select("meta[name=csrf-token]").first["content"]
+    post "/jobs/jobs/#{job.id}/retry", params: { authenticity_token: token }
+    assert_response :redirect
+    assert_nil job.reload.failed_execution
+  ensure
+    ActionController::Base.allow_forgery_protection = false
+  end
+
   test "renders in Italian" do
     I18n.with_locale(:it) do
       fail!(enqueue)
