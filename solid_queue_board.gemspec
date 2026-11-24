@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
                      "and processes. Plain HTML tables, light and dark theme, polling refresh, no front-end dependencies."
   spec.license = "MIT"
   spec.homepage = "https://github.com/ZanoTN/solid_queue_board"
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata = {
     "homepage_uri" => spec.homepage,

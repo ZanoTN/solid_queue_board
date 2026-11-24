@@ -21,7 +21,7 @@ A small, self-contained dashboard for [Solid Queue](https://github.com/rails/sol
 
 ## Requirements
 
-- Ruby 3.1+
+- Ruby 3.2+
 - Rails 7.1+
 - Solid Queue 1.0+
 - Ransack 4.0+ (installed with the gem)
