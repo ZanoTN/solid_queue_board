@@ -1,5 +1,5 @@
 <div class="tbl-wrap">
-  <table>
+  <table class="with-details procs">
     <thead>
       <tr>
         <th><%= sqb_t("processes.columns.kind") %></th>
@@ -15,15 +15,66 @@
     <tbody>
       <% @processes.each do |process| %>
         <% alive = process.last_heartbeat_at && process.last_heartbeat_at > SolidQueue.process_alive_threshold.ago %>
-        <tr>
-          <td class="cls"><%= process.kind %></td>
-          <td class="mono"><%= process.name %></td>
-          <td class="num mono"><%= process.pid %></td>
-          <td class="mono"><%= process.hostname %></td>
-          <td class="small"><%= sqb_metadata(process.metadata) %></td>
-          <td class="num mono"><%= @claimed[process.id] || (process.kind == "Worker" ? 0 : "—") %></td>
-          <td class="mono"><%= sqb_time(process.last_heartbeat_at) %></td>
-          <td><%= alive ? sqb_status_label("finished", sqb_t("processes.alive")) : sqb_status_label("failed", sqb_t("processes.stale")) %></td>
+        <% claimed = @claimed[process.id] || [] %>
+        <% supervisor = @by_id[process.supervisor_id] %>
+        <% children = @supervised[process.id] || [] %>
+        <% tone = alive ? "tone-success" : "tone-danger" %>
+        <tr class="clickable <%= tone %>" data-sqb-toggle="p<%= process.id %>" data-sqb-sig="<%= alive ? "alive" : "stale" %>" aria-expanded="false" tabindex="0">
+          <td class="c-kind cls"><%= process.kind %></td>
+          <td class="c-name mono"><%= process.name %></td>
+          <td class="c-pid num mono" data-label="<%= sqb_t("processes.columns.pid") %>"><%= process.pid %></td>
+          <td class="c-host mono"><%= process.hostname %></td>
+          <td class="c-meta small"><%= sqb_metadata(process.metadata) %></td>
+          <% runs = process.kind == "Worker" || claimed.any? %>
+          <td class="c-run num mono<%= " is-na" unless runs %>" data-label="<%= sqb_t("processes.columns.running") %>"><%= runs ? claimed.size : "—" %></td>
+          <td class="c-beat mono" data-label="<%= sqb_t("processes.columns.heartbeat") %>"><%= sqb_time(process.last_heartbeat_at) %></td>
+          <td class="c-status"><%= alive ? sqb_status_label("finished", sqb_t("processes.alive")) : sqb_status_label("failed", sqb_t("processes.stale")) %></td>
+        </tr>
+        <tr class="detail <%= tone %>" id="sqb-detail-p<%= process.id %>" hidden>
+          <td colspan="8">
+            <div class="detail-grid">
+              <dl class="kv">
+                <dt><%= sqb_t("processes.fields.id") %></dt><dd class="mono"><%= process.id %></dd>
+                <dt><%= sqb_t("processes.fields.started_at") %></dt>
+                <dd class="mono">
+                  <%= sqb_time(process.created_at) %>
+                  <% if process.created_at %><span class="muted nowrap">· <%= sqb_t("processes.uptime", time: sqb_duration(Time.current - process.created_at)) %></span><% end %>
+                </dd>
+                <dt><%= sqb_t("processes.fields.supervisor") %></dt>
+                <dd class="mono">
+                  <% if supervisor %>
+                    <%= supervisor.kind %> <%= supervisor.name %> <span class="muted">(<%= sqb_t("processes.columns.pid") %> <%= supervisor.pid %>)</span>
+                  <% elsif process.supervisor_id %>
+                    <span class="muted">#<%= process.supervisor_id %></span>
+                  <% else %>
+                    <span class="muted">—</span>
+                  <% end %>
+                </dd>
+                <% if children.any? %>
+                  <dt><%= sqb_t("processes.fields.supervised") %></dt>
+                  <dd class="mono"><%= safe_join(children.map { |c| "#{c.kind} #{c.name} (#{c.pid})" }, tag.br) %></dd>
+                <% end %>
+                <% (process.metadata || {}).each do |key, value| %>
+                  <dt><%= key.to_s.humanize %></dt>
+                  <dd class="mono"><%= value.is_a?(Array) ? value.join(", ") : (value.is_a?(Hash) ? value.to_json : value) %></dd>
+                <% end %>
+              </dl>
+              <% if claimed.any? %>
+                <div>
+                  <div class="muted small"><%= sqb_t("processes.fields.running_jobs") %></div>
+                  <dl class="kv">
+                    <% claimed.each do |execution| %>
+                      <dt class="mono"><%= link_to "##{execution.job_id}", jobs_path(q: execution.job_id), class: "plain" %></dt>
+                      <dd>
+                        <span class="cls"><%= execution.job&.class_name %></span>
+                        <span class="muted small">· <%= execution.job&.queue_name %> · <%= sqb_t("jobs.running_for", time: sqb_duration(Time.current - execution.created_at)) %></span>
+                      </dd>
+                    <% end %>
+                  </dl>
+                </div>
+              <% end %>
+            </div>
+          </td>
         </tr>
       <% end %>
       <% if @processes.empty? %>

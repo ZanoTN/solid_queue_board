@@ -126,6 +126,13 @@ ja:
         running: "実行中"
         heartbeat: "最終ハートビート"
         status: "状態"
+      uptime: "稼働 %{time}"
+      fields:
+        id: "ID"
+        started_at: "開始"
+        supervisor: "スーパーバイザー"
+        supervised: "監視対象"
+        running_jobs: "実行中のジョブ"
     flash:
       retried: "ジョブ %{id} を再登録しました。"
       retried_all: "失敗したジョブ %{count} 件を再登録しました。"

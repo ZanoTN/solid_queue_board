@@ -61,8 +61,8 @@ If you protect the route this way, `config.authorize = ->(_) { true }` is enough
 | `title` | host app name | Name shown in the top bar and in the page title. |
 | `back_url` | `"/"` | Link back to the host app in the top bar. `nil` hides it. |
 | `per_page` | `50` | Rows per page in the jobs table. |
-| `poll_intervals` | `[0, 2, 5, 10, 30]` | Refresh choices in seconds, `0` means off. |
-| `default_poll_interval` | `5` | Refresh interval used until the user picks another one. |
+| `poll_intervals` | `[3, 6, 12, 24, 0]` | Refresh choices in seconds, in click order. `0` means paused. |
+| `default_poll_interval` | `6` | Refresh interval used until the user picks another one. |
 
 The chosen theme and refresh interval are stored per browser in `localStorage`.
 

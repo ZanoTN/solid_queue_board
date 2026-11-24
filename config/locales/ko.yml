@@ -126,6 +126,13 @@ ko:
         running: "실행 중"
         heartbeat: "마지막 하트비트"
         status: "상태"
+      uptime: "가동 %{time}"
+      fields:
+        id: "ID"
+        started_at: "시작"
+        supervisor: "슈퍼바이저"
+        supervised: "감독 대상"
+        running_jobs: "실행 중인 작업"
     flash:
       retried: "잡 %{id}을(를) 다시 등록했습니다."
       retried_all: "실패한 잡 %{count}개를 다시 등록했습니다."

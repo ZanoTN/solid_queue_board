@@ -126,6 +126,13 @@ fr:
         running: "En cours depuis"
         heartbeat: "Dernier heartbeat"
         status: "Statut"
+      uptime: "actif depuis %{time}"
+      fields:
+        id: "ID"
+        started_at: "Démarré"
+        supervisor: "Superviseur"
+        supervised: "Supervise"
+        running_jobs: "Jobs en cours"
     flash:
       retried: "Job %{id} remis en file."
       retried_all: "%{count} jobs échoués remis en file."

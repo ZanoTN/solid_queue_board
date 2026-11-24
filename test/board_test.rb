@@ -170,4 +170,21 @@ class ProcessesPageTest < BoardTest
     assert_select "td.cls", text: "Worker"
     assert_select ".label-success"
   end
+
+  test "expands a process to show supervisor and running jobs" do
+    supervisor = SolidQueue::Process.create!(kind: "Supervisor", pid: 1, hostname: "web-1", name: "supervisor-1",
+                                             last_heartbeat_at: Time.current)
+    worker = SolidQueue::Process.create!(kind: "Worker", pid: 42, hostname: "web-1", name: "worker-abc",
+                                         supervisor: supervisor, last_heartbeat_at: Time.current)
+    job = enqueue
+    SolidQueue::ClaimedExecution.create!(job: job, process: worker)
+
+    get "/jobs/processes"
+    assert_select "tr[data-sqb-toggle=p#{worker.id}]"
+    assert_select "#sqb-detail-p#{worker.id}[hidden]" do
+      assert_select "dd", text: /supervisor-1/
+      assert_select "a[href=?]", "/jobs/jobs?q=#{job.id}"
+    end
+    assert_select "#sqb-detail-p#{supervisor.id} dd", text: /worker-abc/
+  end
 end

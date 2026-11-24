@@ -141,6 +141,7 @@ th.num, td.num { text-align: right; }
 .mono { font-family: var(--f-mono); font-size: 12px; }
 .small { font-size: 12.5px; }
 .muted { color: var(--muted); }
+.nowrap { white-space: nowrap; }
 .cls { font-family: var(--f-mono); font-size: 12.5px; color: var(--code-fg); }
 .args { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); word-break: break-all; }
 .err-msg { color: var(--err-ink); font-family: var(--f-mono); font-size: 12px; word-break: break-word; }
@@ -151,10 +152,12 @@ pre.code {
 }
 dl.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 16px; margin: 0; }
 dl.kv dt { color: var(--muted); font-size: 12.5px; }
-dl.kv dd { margin: 0; min-width: 0; word-break: break-all; }
+dl.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .empty { padding: 28px 16px; text-align: center; color: var(--muted); }
 .empty strong { display: block; color: var(--fg); margin-bottom: 4px; }
 #sqb-toolbar, #sqb-pager { display: contents; }
+/* rows switch to display: block on small screens; keep closed details closed */
+[hidden] { display: none !important; }
 .pager { display: flex; gap: 10px; align-items: center; justify-content: center; }
 
 /* Status: colored square + word. Each tone sets --tone, also used by the row stripe. */
@@ -168,7 +171,8 @@ dl.kv dd { margin: 0; min-width: 0; word-break: break-all; }
 .label::before { content: ""; flex: none; width: 9px; height: 9px; background: var(--tone, var(--idle)); }
 
 /* Jobs table: stripe on the left, actions on hover */
-table.jobs > tbody > tr[class*="tone-"] > td:first-child { box-shadow: inset 3px 0 0 var(--tone); }
+table.jobs > tbody > tr[class*="tone-"] > td:first-child,
+table.procs > tbody > tr[class*="tone-"] > td:first-child { box-shadow: inset 3px 0 0 var(--tone); }
 table.jobs .c-status { width: 1%; white-space: nowrap; }
 table.jobs .c-queue { width: 1%; white-space: nowrap; }
 table.jobs .c-when { width: 1%; white-space: nowrap; }
@@ -189,6 +193,13 @@ table.jobs tr:hover .row-actions, table.jobs tr:focus-within .row-actions, table
   .search-form { flex: 1 1 100%; }
   .search-form .input { flex: 1; width: auto; }
 
+  /* cards: the background and the status stripe go on the row, so the row padding does not leave gaps */
+  .tbl-wrap table.with-details > tbody > tr > td { background: transparent; }
+  .tbl-wrap table.with-details > tbody > tr:nth-child(4n+1), .tbl-wrap table.with-details > tbody > tr:nth-child(4n+2) { background: var(--surface); }
+  .tbl-wrap table.with-details > tbody > tr:nth-child(4n+3), .tbl-wrap table.with-details > tbody > tr:nth-child(4n+4) { background: var(--row-alt); }
+  .tbl-wrap table.with-details > tbody > tr.detail { background: var(--detail-bg); }
+  .tbl-wrap table.with-details > tbody > tr.clickable:hover { background: var(--hover); }
+
   /* jobs become cards: job + status, then time + actions */
   table.jobs { min-width: 0; }
   table.jobs thead { display: none; }
@@ -208,6 +219,33 @@ table.jobs tr:hover .row-actions, table.jobs tr:focus-within .row-actions, table
   table.jobs .c-queue { display: none; }
   table.jobs > tbody > tr.clickable > td { padding: 3px 10px; }
   table.jobs .row-actions { visibility: visible; }
+
+  /* processes become cards: kind + status, name, host · PID · running, heartbeat */
+  table.procs { min-width: 0; }
+  table.procs thead { display: none; }
+  table.procs, table.procs tbody, table.procs td { display: block; }
+  table.procs td { border-top: 0; }
+  table.procs > tbody > tr { display: block; border-top: 1px solid var(--line); }
+  table.procs > tbody > tr:first-child { border-top: 0; }
+  table.procs > tbody > tr.clickable {
+    display: flex; flex-wrap: wrap; align-items: baseline; padding: 6px 0; box-shadow: inset 3px 0 0 var(--tone);
+  }
+  table.procs > tbody > tr.detail { box-shadow: inset 3px 0 0 var(--tone); border-top: 0; }
+  table.procs > tbody > tr[class*="tone-"] > td:first-child { box-shadow: none; }
+  table.procs > tbody > tr.clickable > td { padding: 2px 10px; min-width: 0; text-align: left; }
+  table.procs .c-kind { order: 1; flex: 1 1 auto; }
+  table.procs .c-status { order: 2; flex: none; }
+  table.procs .c-name { order: 3; flex: 1 1 100%; font-size: 11.5px; color: var(--muted); word-break: break-all; }
+  table.procs .c-host, table.procs .c-pid, table.procs .c-run { flex: none; font-size: 11.5px; }
+  table.procs .c-host { order: 4; } table.procs .c-pid { order: 5; } table.procs .c-run { order: 6; }
+  table.procs .c-host { max-width: 100%; word-break: break-all; }
+  table.procs > tbody > tr.clickable > .c-host { padding-right: 0; }
+  table.procs > tbody > tr.clickable > .c-pid, table.procs > tbody > tr.clickable > .c-run { padding-left: 0; padding-right: 0; }
+  table.procs .c-pid::before, table.procs .c-run::before { content: "\00a0\00b7\00a0" attr(data-label) "\00a0"; color: var(--muted); font-family: var(--f-ui); }
+  table.procs .c-run.is-na, table.procs .c-meta { display: none; }
+  table.procs .c-beat { order: 7; flex: 1 1 100%; font-size: 11.5px; }
+  table.procs .c-beat::before { content: attr(data-label) " "; color: var(--muted); font-family: var(--f-ui); }
+  table.procs dl.kv { grid-template-columns: minmax(0, max-content) minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
   .live.busy i { animation: none; }

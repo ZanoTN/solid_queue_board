@@ -126,6 +126,13 @@ en:
         running: "Running"
         heartbeat: "Last heartbeat"
         status: "Status"
+      uptime: "up %{time}"
+      fields:
+        id: "ID"
+        started_at: "Started"
+        supervisor: "Supervisor"
+        supervised: "Supervises"
+        running_jobs: "Running jobs"
     flash:
       retried: "Job %{id} enqueued again."
       retried_all: "%{count} failed jobs enqueued again."

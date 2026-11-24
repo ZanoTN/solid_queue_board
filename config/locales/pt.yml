@@ -126,6 +126,13 @@ pt:
         running: "Em execução"
         heartbeat: "Último heartbeat"
         status: "Estado"
+      uptime: "ativo há %{time}"
+      fields:
+        id: "ID"
+        started_at: "Iniciado"
+        supervisor: "Supervisor"
+        supervised: "Supervisiona"
+        running_jobs: "Jobs em execução"
     flash:
       retried: "Job %{id} colocado de novo em fila."
       retried_all: "%{count} jobs falhados colocados de novo em fila."

@@ -126,6 +126,13 @@ zh-CN:
         running: "运行中"
         heartbeat: "最近心跳"
         status: "状态"
+      uptime: "已运行 %{time}"
+      fields:
+        id: "ID"
+        started_at: "启动于"
+        supervisor: "监管进程"
+        supervised: "监管"
+        running_jobs: "运行中的任务"
     flash:
       retried: "作业 %{id} 已重新入队。"
       retried_all: "%{count} 个失败作业已重新入队。"
