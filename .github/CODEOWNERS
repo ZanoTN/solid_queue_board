@@ -1,0 +1,5 @@
+# The whole repository must be approved by the owner
+* @ZanoTN
+
+# Also protects the CODEOWNERS file itself
+/.github/CODEOWNERS @ZanoTN
